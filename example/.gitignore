@@ -1,0 +1,103 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+pubspec.lock
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Android related
+/android/.gradle/
+/android/app/build/
+/android/build/
+/android/local.properties
+/android/gradle/
+/android/gradlew
+/android/gradlew.bat
+/android/.idea/
+/android/captures/
+/android/*.iml
+*.apk
+*.aab
+
+# iOS related
+/ios/.symlinks/
+/ios/Pods/
+/ios/Podfile.lock
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/app.flx
+/ios/Flutter/flutter_assets/
+/ios/Flutter/flutter_export_environment.sh
+/ios/ServiceDefinitions.json
+/ios/Runner/GeneratedPluginRegistrant.*
+*.xcworkspace
+!default.xcworkspace
+xcuserdata/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Web related
+/web/favicon.png
+/web/icons/
+
+# Windows related
+/windows/flutter/ephemeral/
+
+# Linux related
+/linux/flutter/ephemeral/
+
+# macOS related
+/macos/Flutter/ephemeral/
+/macos/Pods/
+/macos/Podfile.lock
+
+# Coverage
+coverage/
+
+# Test related
+.test_coverage.dart
+
+# Exceptions to above rules
+!/android/app/google-services.json
+!/ios/Runner/GoogleService-Info.plist

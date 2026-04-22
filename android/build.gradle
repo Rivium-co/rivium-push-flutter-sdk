@@ -1,0 +1,66 @@
+group 'co.rivium.push.flutter'
+version '0.1.0'
+
+buildscript {
+    ext.kotlin_version = '1.8.22'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal() // For local development with unpublished SDK versions
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'co.rivium.push.flutter'
+    compileSdk 34
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    defaultConfig {
+        minSdk 21
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    sourceSets {
+        main {
+            kotlin.srcDirs += 'src/main/kotlin'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Rivium Push Android SDK (published on Maven Central)
+    // For local dev: publish to mavenLocal with ./gradlew publishToMavenLocal
+    implementation 'co.rivium:rivium-push-android:0.1.1'
+}

@@ -1,0 +1,33 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+
+# Local AAR builds
+android/libs/
+
+# Example app artifacts
+example/build/
+example/.dart_tool/
+example/android/.gradle/
+example/android/local.properties
+example/ios/Pods/
+example/ios/Podfile.lock
+example/ios/.symlinks/
+example/ios/Flutter/Flutter.framework
+example/ios/Flutter/Flutter.podspec
+example/ios/Flutter/Generated.xcconfig
+example/ios/Flutter/flutter_export_environment.sh

@@ -1,0 +1,40 @@
+name: rivium_push_example
+description: Comprehensive example app demonstrating all RiviumPush SDK features including push notifications, in-app messages, inbox, A/B testing, and VoIP calls.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # RiviumPush SDK - Push Notifications (local path for development)
+  rivium_push:
+    path: ../
+
+  # RiviumPush VoIP - Native call UI
+  # Temporarily disabled - VoIP SDK pods not publicly available yet
+  # rivium_push_voip:
+  #   path: ../../flutter/rivium_push_voip
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Uncomment and add assets when needed:
+  # assets:
+  #   - assets/images/
+
+  # Custom fonts can be added here:
+  # fonts:
+  #   - family: RiviumPushIcons
+  #     fonts:
+  #       - asset: assets/fonts/rivium_push_icons.ttf

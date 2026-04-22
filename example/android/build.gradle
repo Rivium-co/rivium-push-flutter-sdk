@@ -1,0 +1,34 @@
+buildscript {
+    ext.kotlin_version = '2.1.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Local development - use mavenLocal() after ./gradlew publishToMavenLocal
+        mavenLocal()
+        // For published builds: maven { url 'https://pub-69e86fbad8904e4a8bd3a1b2d051df1f.r2.dev/maven' }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
