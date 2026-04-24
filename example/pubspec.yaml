@@ -17,8 +17,7 @@ dependencies:
     path: ../
 
   # RiviumPush VoIP - Native call UI (optional)
-  rivium_push_voip:
-    path: ../../rivium_push_voip
+  rivium_push_voip: ^0.1.0
 
 dev_dependencies:
   flutter_test:
