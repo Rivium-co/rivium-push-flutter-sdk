@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1] - 2026-04-24
+
+### Fixed
+- APNs registration no longer triggers when PushKit is in use, preventing duplicate token registration
+
+### Added
+- VoIP call UI support in example app via rivium_push_voip plugin
+
 ## [0.1.0] - 2026-04-22
 
 ### Added
