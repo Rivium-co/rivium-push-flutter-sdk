@@ -14,7 +14,7 @@ class RiviumPushService {
   // IMPORTANT: Replace with your actual API key from Rivium Console
   // ============================================================
   // Replace with your API key from Rivium Console (https://console.rivium.co)
-  static const String _apiKey = 'rv_live_your_api_key_here';
+  static const String apiKey = 'rv_live_your_api_key_here';
   // static const String _appName = 'RiviumPush Example';
 
   // State
@@ -64,11 +64,12 @@ class RiviumPushService {
       // (VoIP/PushKit doesn't work on simulator)
       await RiviumPush.init(
         const RiviumPushConfig(
-          apiKey: _apiKey,
+          apiKey: apiKey,
           notificationIcon: 'ic_notification',
           showServiceNotification: false,
           showNotificationInForeground: true,
-          usePushKit: false, // Disable VoIP for simulator compatibility
+          usePushKit:
+              false, // VoIP handled by rivium_push_voip plugin independently
         ),
       );
 

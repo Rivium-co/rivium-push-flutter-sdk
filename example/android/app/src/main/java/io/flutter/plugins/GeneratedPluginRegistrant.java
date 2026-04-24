@@ -20,5 +20,10 @@ public final class GeneratedPluginRegistrant {
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin rivium_push, co.rivium.push.flutter.RiviumPushPlugin", e);
     }
+    try {
+      flutterEngine.getPlugins().add(new co.rivium.push.voip.flutter.RiviumPushVoipPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin rivium_push_voip, co.rivium.push.voip.flutter.RiviumPushVoipPlugin", e);
+    }
   }
 }

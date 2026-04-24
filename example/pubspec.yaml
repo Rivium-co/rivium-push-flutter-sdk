@@ -16,10 +16,9 @@ dependencies:
   rivium_push:
     path: ../
 
-  # RiviumPush VoIP - Native call UI
-  # Temporarily disabled - VoIP SDK pods not publicly available yet
-  # rivium_push_voip:
-  #   path: ../../flutter/rivium_push_voip
+  # RiviumPush VoIP - Native call UI (optional)
+  rivium_push_voip:
+    path: ../../rivium_push_voip
 
 dev_dependencies:
   flutter_test:

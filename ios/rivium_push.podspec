@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'rivium_push'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'Rivium Push notification plugin for Flutter'
   s.description      = 'Real-time push notifications, in-app messages, inbox, A/B testing, and more for Flutter apps'
   s.homepage         = 'https://rivium.co/cloud/rivium-push'

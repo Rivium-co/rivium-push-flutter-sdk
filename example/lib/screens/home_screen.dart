@@ -6,8 +6,7 @@ import 'ab_testing_screen.dart';
 import 'inapp_messages_screen.dart';
 import 'inbox_screen.dart';
 import 'push_notifications_screen.dart';
-// VoIP temporarily disabled - pods not publicly available yet
-// import 'voip_screen.dart';
+import 'voip_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -234,14 +233,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () => _navigateTo(const ABTestingScreen()),
           ),
 
-          // VoIP temporarily disabled - pods not publicly available yet
-          // _buildFeatureCard(
-          //   icon: Icons.phone,
-          //   title: 'VoIP Calls',
-          //   subtitle: 'Native incoming call UI',
-          //   color: Colors.green,
-          //   onTap: () => _navigateTo(const VoIPScreen()),
-          // ),
+          _buildFeatureCard(
+            icon: Icons.phone,
+            title: 'VoIP Calls',
+            subtitle: 'Native incoming call UI',
+            color: Colors.green,
+            onTap: () => _navigateTo(const VoIPScreen()),
+          ),
 
           _buildFeatureCard(
             icon: Icons.settings,

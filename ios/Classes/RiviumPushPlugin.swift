@@ -360,9 +360,12 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         // Set notification center delegate for foreground notification display
         UNUserNotificationCenter.current().delegate = self
 
-        // Request notification permission and register for APNs
+        // Request notification permission
+        let usePushKit = args["usePushKit"] as? Bool ?? false
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-            if granted {
+            if granted && !usePushKit {
+                // Only register for APNs when not using PushKit
+                // PushKit registration is handled by the native SDK internally
                 DispatchQueue.main.async {
                     UIApplication.shared.registerForRemoteNotifications()
                 }

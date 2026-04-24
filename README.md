@@ -301,7 +301,46 @@ await RiviumPush.unregister();
 
 See the [example](example/) directory for a complete working app with all features demonstrated.
 
-The Push SDK works independently without VoIP.
+## VoIP Calls (Optional)
+
+For apps with calling features, add the [rivium_push_voip](https://pub.dev/packages/rivium_push_voip) plugin for native incoming call UI:
+
+```yaml
+dependencies:
+  rivium_push: ^0.1.0
+  rivium_push_voip: ^0.1.0  # Optional - for calling apps
+```
+
+```dart
+// Initialize VoIP after RiviumPush
+await RiviumPushVoIP.init(
+  config: RiviumPushVoIPConfig(appName: 'MyApp'),
+  onCallAccepted: (callData) => navigateToCallScreen(callData),
+  onCallDeclined: (callData) => notifyCallDeclined(callData.callId),
+);
+
+// Set API key for VoIP token registration
+final deviceId = await RiviumPush.getDeviceId();
+await RiviumPushVoIP.setApiKey(apiKey: 'rv_live_...', deviceId: deviceId);
+```
+
+To trigger an incoming call, send a push with `type: "voip_call"` in the data:
+
+```json
+{
+  "title": "Incoming Call",
+  "body": "John Doe is calling",
+  "data": {
+    "type": "voip_call",
+    "callerName": "John Doe",
+    "callerId": "user_456",
+    "callerAvatar": "https://example.com/avatar.jpg",
+    "callType": "video"
+  }
+}
+```
+
+The `type: "voip_call"` triggers VoIP delivery (PushKit on iOS, high-priority on Android). Without it, the message is delivered as a regular push notification. See the [rivium_push_voip README](https://pub.dev/packages/rivium_push_voip) for full setup guide.
 
 ## Links
 
