@@ -62,5 +62,5 @@ dependencies {
 
     // Rivium Push Android SDK (published on Maven Central)
     // For local dev: publish to mavenLocal with ./gradlew publishToMavenLocal
-    implementation 'co.rivium:rivium-push-android:0.1.1'
+    implementation 'co.rivium:rivium-push-android:0.1.2'
 }
