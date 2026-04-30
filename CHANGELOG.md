@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3] - 2026-04-30
+
+### Changed
+- Bumped Android native SDK to 0.1.3 and iOS native SDK to 0.1.4
+- subscriptionId migration: backend-issued per-install UUID alongside deviceId
+- userId now persists across app launches; `setUserId` only needs to be called after install or login
+
 ## [0.1.1] - 2026-04-24
 
 ### Fixed

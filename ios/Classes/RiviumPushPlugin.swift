@@ -61,6 +61,9 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         case "getDeviceId":
             result(RiviumPush.shared.getDeviceId())
 
+        case "getSubscriptionId":
+            result(RiviumPush.shared.getSubscriptionId())
+
         case "setLogLevel":
             if let args = call.arguments as? [String: Any],
                let level = args["level"] as? String {

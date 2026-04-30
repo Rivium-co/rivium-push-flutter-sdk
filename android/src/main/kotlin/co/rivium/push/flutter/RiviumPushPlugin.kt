@@ -231,6 +231,9 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "getDeviceId" -> {
                 result.success(RiviumPush.getDeviceId())
             }
+            "getSubscriptionId" -> {
+                result.success(RiviumPush.getSubscriptionId())
+            }
             "setUserId" -> {
                 val userId = call.argument<String>("userId")
                 if (userId != null) {

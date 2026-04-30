@@ -352,6 +352,13 @@ class RiviumPush {
     return await _channel.invokeMethod<String>('getDeviceId');
   }
 
+  /// Get the per-install subscription ID issued by the server during registration.
+  /// This is the canonical addressing key for inbox / A-B / in-app calls and the
+  /// new MQTT topic. Returns `null` until registration succeeds at least once.
+  static Future<String?> getSubscriptionId() async {
+    return await _channel.invokeMethod<String>('getSubscriptionId');
+  }
+
   /// Set or update user ID for the current device
   /// Call this after user login to associate the device with the user
   static Future<void> setUserId(String userId) async {
