@@ -2,6 +2,8 @@ package co.rivium.push.flutter
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import io.flutter.plugin.common.PluginRegistry
 import androidx.annotation.NonNull
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -74,11 +76,13 @@ fun ABTestSummary.toMap(): Map<String, Any?> {
     )
 }
 
-class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
+    PluginRegistry.NewIntentListener {
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
 
     private var activity: Activity? = null
+    private var activityBinding: ActivityPluginBinding? = null
     private var lifecycleObserver: LifecycleEventObserver? = null
     private var isInForeground = true
 
@@ -761,15 +765,19 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         Log.d(TAG, "====== ATTACHED TO ACTIVITY ======")
         activity = binding.activity
+        activityBinding = binding
+        binding.addOnNewIntentListener(this)
         isFlutterInForeground = true
         setupLifecycleObserver()
-        // Set activity for in-app messages
+        // Set activity for in-app messages (also processes any launch-tap intent).
         RiviumPush.setCurrentActivity(activity)
         Log.d(TAG, "==================================")
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
         Log.d(TAG, "Detached from activity for config changes")
+        activityBinding?.removeOnNewIntentListener(this)
+        activityBinding = null
         activity = null
         RiviumPush.setCurrentActivity(null)
     }
@@ -777,14 +785,24 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         Log.d(TAG, "Reattached to activity for config changes")
         activity = binding.activity
+        activityBinding = binding
+        binding.addOnNewIntentListener(this)
         RiviumPush.setCurrentActivity(activity)
     }
 
     override fun onDetachedFromActivity() {
         Log.d(TAG, "====== DETACHED FROM ACTIVITY ======")
+        activityBinding?.removeOnNewIntentListener(this)
+        activityBinding = null
         activity = null
         RiviumPush.setCurrentActivity(null)
         Log.d(TAG, "====================================")
+    }
+
+    override fun onNewIntent(intent: Intent): Boolean {
+        Log.d(TAG, "onNewIntent received — forwarding to RiviumPush")
+        RiviumPush.handleNotificationIntent(intent)
+        return false
     }
 
     private fun setupLifecycleObserver() {

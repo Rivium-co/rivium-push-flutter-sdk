@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4] - 2026-05-12
+
+### Fixed
+- Android: tapping a notification from the status bar now reliably brings the app to the foreground (previously the tap was silently dropped on Android 10+ when the app was in the background)
+
+### Changed
+- Bumped Android native SDK to 0.1.4
+
 ## [0.1.3] - 2026-04-30
 
 ### Changed
