@@ -20,7 +20,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  rivium_push: ^0.1.4
+  rivium_push: ^0.1.5
 ```
 
 Then run:

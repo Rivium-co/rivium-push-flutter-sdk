@@ -684,6 +684,17 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 Log.d(TAG, "Notification tapped: ${message.title}")
                 invokeFlutterMethod("onNotificationTapped", message.toMap())
             }
+
+            override fun onNotificationAction(message: RiviumPushMessage, actionId: String) {
+                Log.d(TAG, "Notification action: $actionId for ${message.title}")
+                invokeFlutterMethod("onNotificationAction", mapOf(
+                    "actionId" to actionId,
+                    "title" to message.title,
+                    "body" to message.body,
+                    "data" to message.data,
+                    "messageId" to message.messageId
+                ))
+            }
         })
 
         // Set up in-app message callback to forward events to Flutter

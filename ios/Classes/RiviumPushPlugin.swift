@@ -570,9 +570,13 @@ extension RiviumPushPlugin: RiviumPushDelegate {
     }
 
     public func riviumPush(_ riviumPush: RiviumPush, didReceiveNotificationAction action: NotificationAction, forMessage message: RiviumPushMessage) {
+        let messageDict = message.toDictionary()
         invokeMethod("onNotificationAction", arguments: [
-            "action": action.toDictionary(),
-            "message": message.toDictionary()
+            "actionId": action.id,
+            "title": messageDict["title"] as Any,
+            "body": messageDict["body"] as Any,
+            "data": messageDict["data"] as Any,
+            "messageId": messageDict["messageId"] as Any
         ])
     }
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.5] - 2026-05-12
+
+### Fixed
+- Notification action buttons now fire the `onNotificationAction` callback on Android and iOS.
+- Android: notifications auto-dismiss after an action button tap.
+
+### Changed
+- Bumped Android native SDK to 0.1.5 and iOS native SDK to 0.1.5
+
 ## [0.1.4] - 2026-05-12
 
 ### Fixed
