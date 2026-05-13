@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.6] - 2026-05-13
+
+### Fixed
+- Android: custom notification sounds from `res/raw/` now play reliably across OEMs.
+
+### Changed
+- Bumped Android native SDK to 0.1.6
+
 ## [0.1.5] - 2026-05-12
 
 ### Fixed
