@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] - 2026-05-26
+
+### Fixed
+- iOS: `onNotificationTapped` now fires when tapping a foreground notification.
+
 ## [0.1.6] - 2026-05-13
 
 ### Fixed

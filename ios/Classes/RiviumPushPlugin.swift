@@ -653,10 +653,9 @@ extension RiviumPushPlugin: UNUserNotificationCenterDelegate {
     }
 
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        let userInfo = response.notification.request.content.userInfo
-        if let message = RiviumPushMessage.from(payload: userInfo) {
-            invokeMethod("onNotificationTapped", arguments: message.toDictionary())
-        }
-        completionHandler()
+        // Forward to the SDK — it owns the full tap pipeline (initial-message capture,
+        // action routing, delegate dispatch). Plugin's didTapNotification / didReceiveNotificationAction
+        // will fire onNotificationTapped / onNotificationAction to Flutter.
+        RiviumPush.shared.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
     }
 }
