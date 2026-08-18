@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.8] - 2026-08-17
+
+### Fixed
+- Android 15+: app crashed at boot (`ForegroundServiceStartNotAllowedException`). Switched foreground service to `specialUse`.
+
+### Changed
+- Bumped Android native SDK to 0.1.7.
+
 ## [0.1.7] - 2026-05-26
 
 ### Fixed
