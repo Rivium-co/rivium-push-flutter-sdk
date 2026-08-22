@@ -315,10 +315,16 @@ class RiviumPush {
     _onNotificationTapped = callback;
   }
 
-  /// Register device for push notifications
+  /// Register device for push notifications.
+  ///
+  /// [metadata] values can be `String`, `int`, `double`, or `bool`. Native
+  /// JSON types are preserved end-to-end so dashboard segments filter with
+  /// real operators — `> 100` on `follower_count: 42`, `is` on
+  /// `is_pro: true`. Pre-0.1.11 forced `Map<String, String>` and everything
+  /// arrived stringified.
   static Future<void> register({
     String? userId,
-    Map<String, String>? metadata,
+    Map<String, Object?>? metadata,
   }) async {
     await _channel.invokeMethod('register', {
       'userId': userId,

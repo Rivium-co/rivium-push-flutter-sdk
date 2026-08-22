@@ -409,7 +409,10 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
     private func handleRegister(call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args = call.arguments as? [String: Any]
         let userId = args?["userId"] as? String
-        let metadata = args?["metadata"] as? [String: String]
+        // Metadata carries native JSON types (Int, Double, Bool, String) over
+        // the method channel so dashboard segments get real numbers/booleans,
+        // not stringified values. Pre-0.1.11 forced [String: String].
+        let metadata = args?["metadata"] as? [String: Any]
 
         RiviumPush.shared.register(userId: userId, metadata: metadata)
         result(nil)

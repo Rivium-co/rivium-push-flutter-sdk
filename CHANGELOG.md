@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.11] - 2026-08-23
+
+### Changed
+- `RiviumPush.register(metadata: ...)` now accepts `Map<String, Object?>` (was `Map<String, String>`). Values can be `String`, `int`, `double`, or `bool`. Native JSON types are preserved end-to-end so dashboard segments filter with real operators (`> 100` on `follower_count: 42`, `is true` on `is_pro`). Backward-compatible — existing `Map<String, String>` callers keep working.
+- Bumped iOS SDK to 0.1.6 (matching type-preserving change on the native side).
+
+### Fixed
+- Numeric and boolean metadata previously arrived at the backend as JSON strings, so segment operator dropdowns only exposed `=` / `≠` / `contains`. Now they arrive with correct JSON types and `>`, `<`, `is`, `is not` become available.
+
 ## [0.1.10] - 2026-08-23
 
 ### Added
