@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.10] - 2026-08-23
+
+### Added
+- `RiviumPushInAppOverlay` widget renders in-app messages out of the box (modal, banner, fullscreen, card). Wrap your app once — no per-app renderer needed.
+- `RiviumPushInAppTheme` for styling knobs (colors, border radius, elevation, max width, animation duration).
+- `RiviumPushInAppBuilders` to fully replace any renderer with your own widget.
+- `RiviumPush.recordInAppButtonClick(messageId, buttonId)` and `RiviumPush.recordInAppDismissed(messageId)` — used internally by the overlay to record impressions on Flutter-rendered UI.
+
+### Fixed
+- In-app messages no longer silently drop when no manual `onInAppMessageReady` handler is set. The native SDK skips its own UI when the plugin sets a callback; the new overlay now renders it.
+
 ## [0.1.9] - 2026-08-18
 
 ### Fixed

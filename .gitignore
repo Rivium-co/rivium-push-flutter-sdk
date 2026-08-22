@@ -18,6 +18,7 @@ Thumbs.db
 
 # Local AAR builds
 android/libs/
+android/.gradle/
 
 # Example app artifacts
 example/build/

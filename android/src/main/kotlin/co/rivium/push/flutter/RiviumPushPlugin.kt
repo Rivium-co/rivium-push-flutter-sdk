@@ -29,6 +29,7 @@ import co.rivium.push.sdk.Log
 import co.rivium.push.sdk.inapp.InAppMessage
 import co.rivium.push.sdk.inapp.InAppButton
 import co.rivium.push.sdk.inapp.InAppMessageCallback
+import co.rivium.push.sdk.inapp.InAppImpressionAction
 import co.rivium.push.sdk.inbox.InboxCallback
 import co.rivium.push.sdk.inbox.InboxCallbackAdapter
 import co.rivium.push.sdk.inbox.InboxFilter
@@ -316,6 +317,35 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             "dismissInAppMessage" -> {
                 RiviumPush.dismissInAppMessage()
                 result.success(null)
+            }
+            "recordInAppButtonClick" -> {
+                val messageId = call.argument<String>("messageId")
+                val buttonId = call.argument<String>("buttonId")
+                if (messageId != null && buttonId != null) {
+                    try {
+                        RiviumPush.getInAppMessageManager()
+                            .recordImpression(messageId, InAppImpressionAction.BUTTON_CLICK, buttonId)
+                        result.success(null)
+                    } catch (e: Exception) {
+                        result.error("RECORD_FAILED", e.message, null)
+                    }
+                } else {
+                    result.error("INVALID_ARGUMENT", "messageId and buttonId required", null)
+                }
+            }
+            "recordInAppDismissed" -> {
+                val messageId = call.argument<String>("messageId")
+                if (messageId != null) {
+                    try {
+                        RiviumPush.getInAppMessageManager()
+                            .recordImpression(messageId, InAppImpressionAction.DISMISS)
+                        result.success(null)
+                    } catch (e: Exception) {
+                        result.error("RECORD_FAILED", e.message, null)
+                    }
+                } else {
+                    result.error("INVALID_ARGUMENT", "messageId required", null)
+                }
             }
             // Inbox Methods
             "getInboxMessages" -> {

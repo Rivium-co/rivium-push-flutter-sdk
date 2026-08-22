@@ -150,6 +150,27 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
             RiviumPush.shared.dismissInAppMessage()
             result(nil)
 
+        case "recordInAppButtonClick":
+            if let args = call.arguments as? [String: Any],
+               let messageId = args["messageId"] as? String,
+               let buttonId = args["buttonId"] as? String {
+                RiviumPush.shared.getInAppMessageManager()
+                    .recordImpression(messageId: messageId, action: .buttonClick, buttonId: buttonId)
+                result(nil)
+            } else {
+                result(FlutterError(code: "INVALID_ARGUMENT", message: "messageId and buttonId required", details: nil))
+            }
+
+        case "recordInAppDismissed":
+            if let args = call.arguments as? [String: Any],
+               let messageId = args["messageId"] as? String {
+                RiviumPush.shared.getInAppMessageManager()
+                    .recordImpression(messageId: messageId, action: .dismiss)
+                result(nil)
+            } else {
+                result(FlutterError(code: "INVALID_ARGUMENT", message: "messageId required", details: nil))
+            }
+
         // MARK: - Inbox
         case "getInboxMessages":
             handleGetInboxMessages(call: call, result: result)

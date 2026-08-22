@@ -462,6 +462,23 @@ class RiviumPush {
     await _channel.invokeMethod('dismissInAppMessage');
   }
 
+  /// Record a button-click impression for an in-app message.
+  /// Called by [RiviumPushInAppOverlay] when the app renders its own UI.
+  static Future<void> recordInAppButtonClick(String messageId, String buttonId) async {
+    await _channel.invokeMethod('recordInAppButtonClick', {
+      'messageId': messageId,
+      'buttonId': buttonId,
+    });
+  }
+
+  /// Record a dismiss impression for an in-app message.
+  /// Called by [RiviumPushInAppOverlay] when the app renders its own UI.
+  static Future<void> recordInAppDismissed(String messageId) async {
+    await _channel.invokeMethod('recordInAppDismissed', {
+      'messageId': messageId,
+    });
+  }
+
   // ==================== Inbox ====================
 
   /// Set callback for when a new inbox message is received
