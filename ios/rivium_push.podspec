@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'Flutter'
   # Rivium Push iOS SDK (published on CocoaPods)
-  s.dependency 'RiviumPushSDK', '~> 0.1.7'
+  s.dependency 'RiviumPushSDK', '~> 0.1.8'
 
   s.platform         = :ios, '13.0'
   s.swift_version    = '5.0'

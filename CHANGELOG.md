@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.13] - 2026-08-23
+
+### Added
+- The app build number (Android `versionCode` / iOS `CFBundleVersion`) is now sent as a separate device attribute on every `register()` call. Filter on it in the dashboard's segment builder to target specific builds within the same release — useful for hotfix rollouts and staged releases.
+
 ## [0.1.12] - 2026-08-23
 
 ### Added
