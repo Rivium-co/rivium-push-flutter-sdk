@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.12] - 2026-08-23
+
+### Added
+- Device attributes (app version, OS version, device model, language, country, timezone) are now sent automatically on every `register()` call. Use them as preset filters in the dashboard's segment builder to target specific app releases, OS versions, locales, or regions — no need to populate metadata yourself.
+
 ## [0.1.11] - 2026-08-23
 
 ### Changed
