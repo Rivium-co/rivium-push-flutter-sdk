@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.14] - 2026-09-08
+
+### Fixed
+- iOS: tapping a notification while the app was not running opened the app but never navigated. Apps using the UIScene lifecycle (the Flutter default) register plugins too late for iOS to deliver the launch tap, so it was discarded. The tap is now captured and returned by `getInitialMessage()`, matching Android.
+
+### Added
+- `appGroup` on `RiviumPushConfig` (iOS only) — enables delivery confirmation from a Notification Service Extension.
+
+### Changed
+- Requires `RiviumPushSDK ~> 0.1.9` (iOS) and `rivium-push-android:0.1.11`.
+
 ## [0.1.13] - 2026-08-23
 
 ### Added

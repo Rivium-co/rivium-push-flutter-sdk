@@ -197,6 +197,15 @@ class RiviumPush {
   static OnABTestErrorCallback? _onABTestError;
   static OnNotificationTappedCallback? _onNotificationTapped;
 
+  /// A tap that arrived before the app registered its handler.
+  ///
+  /// On a cold start the OS launches the app *because* of the tap, so the
+  /// event reaches the plugin while Dart is still starting up and no callback
+  /// exists yet. Holding it here lets it be delivered as soon as the app
+  /// registers, instead of being dropped and leaving the user on the home
+  /// screen instead of the screen the notification pointed at.
+  static RiviumPushMessage? _pendingTappedMessage;
+
   /// Analytics callback for tracking SDK events
   static RiviumPushAnalyticsCallback? _analyticsCallback;
 
@@ -376,13 +385,29 @@ class RiviumPush {
     await _channel.invokeMethod('clearUserId');
   }
 
-  /// Get the message that launched the app (when user tapped a notification)
-  /// Returns null if the app was not launched from a notification tap
-  /// This should be called early in your app initialization (e.g., in main())
+  /// The notification that launched the app, if the user got here by tapping
+  /// one. Returns null otherwise, and only returns a given message once.
+  ///
+  /// Call this when your app is ready to act on it — after auth and routing
+  /// are set up — not necessarily in `main()`. A cold-start tap is delivered
+  /// here rather than through [onNotificationTapped], because that callback
+  /// fires while the app is still starting and any navigation it triggers is
+  /// overwritten by the app's own startup routing.
+  ///
+  /// [onNotificationTapped] handles the other case: a tap while the app is
+  /// already running (foreground or background).
   static Future<RiviumPushMessage?> getInitialMessage() async {
-    final result = await _channel.invokeMethod<Map<dynamic, dynamic>>('getInitialMessage');
-    if (result == null) return null;
-    return RiviumPushMessage.fromMap(result);
+    final result =
+        await _channel.invokeMethod<Map<dynamic, dynamic>>('getInitialMessage');
+    if (result != null) return RiviumPushMessage.fromMap(result);
+
+    // Fall back to a tap that reached Dart before the app registered any
+    // handler. The native side only stores the launch notification when it has
+    // no listener of its own; with the Flutter plugin attached it forwards
+    // instead, so without this the cold-start tap would be lost.
+    final pending = _pendingTappedMessage;
+    _pendingTappedMessage = null;
+    return pending;
   }
 
   /// Set the log level for native SDK logging.
@@ -1123,13 +1148,17 @@ class RiviumPush {
         break;
 
       case 'onNotificationTapped':
-        print('[RiviumPush] onNotificationTapped handler - callback set: ${_onNotificationTapped != null}');
-        if (_onNotificationTapped != null && call.arguments is Map) {
+        if (call.arguments is Map) {
           final message = RiviumPushMessage.fromMap(
             call.arguments as Map<dynamic, dynamic>,
           );
-          print('[RiviumPush] Notification tapped: ${message.title}');
-          _onNotificationTapped!(message);
+          if (_onNotificationTapped != null) {
+            _onNotificationTapped!(message);
+          } else {
+            // Cold start: the tap launched the app and Dart is not ready yet.
+            // Hold it for getInitialMessage() to pick up.
+            _pendingTappedMessage = message;
+          }
         }
         break;
 

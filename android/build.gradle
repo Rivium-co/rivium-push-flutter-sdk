@@ -18,7 +18,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        mavenLocal() // For local development with unpublished SDK versions
     }
 }
 
@@ -61,6 +60,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // Rivium Push Android SDK (published on Maven Central)
-    // For local dev: publish to mavenLocal with ./gradlew publishToMavenLocal
-    implementation 'co.rivium:rivium-push-android:0.1.10'
+    implementation 'co.rivium:rivium-push-android:0.1.11'
 }

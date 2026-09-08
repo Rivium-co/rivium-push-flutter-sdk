@@ -22,6 +22,22 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         registrar.addApplicationDelegate(instance)
         RiviumPushPlugin.instance = instance
 
+        // Claim the notification-centre delegate here, at plugin registration.
+        //
+        // iOS delivers a tap that launched the app immediately after
+        // didFinishLaunchingWithOptions returns, and DROPS it if no delegate is
+        // set by then — it is never queued. Registration runs inside the host
+        // app's launch (directly, or via didInitializeImplicitFlutterEngine),
+        // so this is the last point that is still early enough. Claiming it in
+        // init() — when Dart calls RiviumPush.init — is far too late: the event
+        // is already gone, which made a notification tapped while the app was
+        // not running open the app and deliver nothing.
+        UNUserNotificationCenter.current().delegate = instance
+
+        // Scene-lifecycle hosts divert the launch tap to the scene connection
+        // options; RiviumPushLaunchCatcher captures it. Observe it here, and
+        // drain again after initialize() — whichever happens last wins, and
+        // takePendingLaunchResponse() only yields the response once.
         // Set up delegate to receive callbacks from native SDK
         RiviumPush.shared.delegate = instance
 
@@ -106,6 +122,10 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
 
         // MARK: - Initial Message
         case "getInitialMessage":
+            if let message = takeCapturedLaunchMessage() {
+                result(message.toDictionary())
+                return
+            }
             if let message = RiviumPush.shared.getInitialMessage() {
                 RiviumPush.shared.clearInitialMessage()
                 result(message.toDictionary())
@@ -375,13 +395,15 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
             pnToken: args["pnToken"] as? String ?? args["mqttPassword"] as? String,
             usePushKit: args["usePushKit"] as? Bool ?? false,
             showNotificationInForeground: args["showNotificationInForeground"] as? Bool ?? true,
-            autoConnect: args["autoConnect"] as? Bool ?? true
+            autoConnect: args["autoConnect"] as? Bool ?? true,
+            appGroup: args["appGroup"] as? String
         )
 
         RiviumPush.shared.initialize(config: config)
         self.showNotificationInForeground = args["showNotificationInForeground"] as? Bool ?? true
 
-        // Set notification center delegate for foreground notification display
+        // Normally already claimed in didFinishLaunchingWithOptions above;
+        // re-assert in case the host app replaced the delegate after launch.
         UNUserNotificationCenter.current().delegate = self
 
         // Request notification permission
@@ -514,19 +536,60 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         )
     }
 
+    // MARK: - Scene-Launch Tap Replay
+
+    /// Flutter's supported scene-lifecycle hook for plugins.
+    ///
+    /// Plugins added via `registrar.addApplicationDelegate` are forwarded scene
+    /// events by FlutterPluginSceneLifeCycleDelegate. This is the same launch
+    /// tap RiviumPushLaunchCatcher swizzles for; whichever arrives first wins,
+    /// since takePendingLaunchResponse() only yields it once.
+    @available(iOS 13.0, *)
+    @objc public func scene(_ scene: UIScene,
+                            willConnectTo session: UISceneSession,
+                            options connectionOptions: UIScene.ConnectionOptions) -> Bool {
+        if let response = connectionOptions.notificationResponse {
+            RiviumPushLaunchCatcher.store(response)
+            return true
+        }
+        return false
+    }
+
+    /// Parses a launch tap captured by RiviumPushLaunchCatcher, if there is one.
+    ///
+    /// The captured response is deliberately NOT replayed through
+    /// `RiviumPush.shared.userNotificationCenter(...)`. Two things make that
+    /// unreliable at launch on a scene-based host:
+    ///
+    ///  * it happens before Dart calls `initialize()`, so the SDK is not ready; and
+    ///  * `handleNotificationResponse` only stores an initial message when
+    ///    `delegate == nil`, and the plugin sets itself as the delegate at
+    ///    registration — so the launch tap would be dispatched as a live
+    ///    callback and never stored. (Same shape as the Android bug.)
+    ///
+    /// Parsing here instead makes the result deterministic: the tap is held
+    /// until Dart asks for it, then answered synchronously.
+    private func takeCapturedLaunchMessage() -> RiviumPushMessage? {
+        guard let response = RiviumPushLaunchCatcher.takePendingLaunchResponse() else { return nil }
+
+        let userInfo = response.notification.request.content.userInfo
+
+        if let messageDict = userInfo["rivium_push_message"] as? [String: Any] {
+            let payload: [AnyHashable: Any] =
+                Dictionary(uniqueKeysWithValues: messageDict.map { ($0.key, $0.value) })
+            return RiviumPushMessage.from(payload: payload)
+        }
+        return RiviumPushMessage.from(payload: userInfo)
+    }
+
     // MARK: - Flutter Method Invocation
 
     private func invokeMethod(_ method: String, arguments: Any?) {
-        NSLog("[RiviumPush.Plugin] invokeMethod called: %@, isMainThread: %d", method, Thread.isMainThread ? 1 : 0)
         DispatchQueue.main.async {
-            NSLog("[RiviumPush.Plugin] Inside main thread dispatch for: %@", method)
             if let channel = self.channel {
-                NSLog("[RiviumPush.Plugin] Channel exists, invoking method: %@", method)
                 channel.invokeMethod(method, arguments: arguments)
-                NSLog("[RiviumPush.Plugin] Method invoked on channel: %@", method)
             } else {
                 // Queue the message for later delivery
-                NSLog("[RiviumPush.Plugin] Channel is nil! Queueing method: %@", method)
                 RiviumPushPlugin.pendingMessagesLock.lock()
                 RiviumPushPlugin.pendingMessages.append((method, arguments))
                 RiviumPushPlugin.pendingMessagesLock.unlock()
@@ -605,10 +668,7 @@ extension RiviumPushPlugin: RiviumPushDelegate {
     }
 
     public func riviumPush(_ riviumPush: RiviumPush, didTapNotification message: RiviumPushMessage) {
-        NSLog("[RiviumPush.Plugin] didTapNotification called: title=%@", message.title ?? "nil")
-        NSLog("[RiviumPush.Plugin] Invoking Flutter method onNotificationTapped")
         invokeMethod("onNotificationTapped", arguments: message.toDictionary())
-        NSLog("[RiviumPush.Plugin] onNotificationTapped invoked")
     }
 }
 
