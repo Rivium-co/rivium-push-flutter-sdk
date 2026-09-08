@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'rivium_push'
-  s.version          = '0.1.14'
+  s.version          = '0.1.15'
   s.summary          = 'Rivium Push notification plugin for Flutter'
   s.description      = 'Real-time push notifications, in-app messages, inbox, A/B testing, and more for Flutter apps'
   s.homepage         = 'https://rivium.co/cloud/rivium-push'
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'Flutter'
   # Rivium Push iOS SDK (published on CocoaPods)
-  s.dependency 'RiviumPushSDK', '~> 0.1.9'
+  s.dependency 'RiviumPushSDK', '~> 0.1.11'
 
   s.platform         = :ios, '13.0'
   s.swift_version    = '5.0'

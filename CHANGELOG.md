@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.15] - 2026-09-09
+
+### Changed
+- Requires iOS `RiviumPushSDK ~> 0.1.11`, which fixes a launch crash (`Symbol not found: RiviumPush.shared`) for apps that also ship a Notification Service Extension. If you use delivery confirmation, your extension target now takes the separate `RiviumPushSDKExtension` pod instead of the `RiviumPushSDK/Extension` subspec — see the [iOS setup guide](https://rivium.co/cloud/rivium-push/docs/sdks-ios).
+
 ## [0.1.14] - 2026-09-08
 
 ### Fixed
