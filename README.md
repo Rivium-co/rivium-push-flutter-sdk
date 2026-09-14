@@ -101,6 +101,7 @@ await RiviumPush.init(RiviumPushConfig(
   usePushKit: false,                   // Optional - iOS VoIP mode for calling apps
   showServiceNotification: true,       // Optional - foreground service notification (Android)
   showNotificationInForeground: true,  // Optional - show notifications when app is in foreground
+  autoRefresh: true,                   // Optional - refresh the registration on launch (24h or app/SDK/user change)
 ));
 ```
 

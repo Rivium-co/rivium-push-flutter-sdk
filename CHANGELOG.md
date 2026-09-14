@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.16] - 2026-09-14
+
+### Added
+- `autoRefresh` on `RiviumPushConfig` (default `true`): keeps a registered device up to date on launch.
+- The plugin reports itself as `flutter` with its version (`riviumPushSdkVersion`).
+- iOS: delivery confirmation for foreground and silent notifications.
+
+### Changed
+- Requires `RiviumPushSDK ~> 0.1.12` (iOS) and `rivium-push-android:0.1.12`.
+
 ## [0.1.15] - 2026-09-09
 
 ### Changed

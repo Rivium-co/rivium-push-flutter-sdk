@@ -1,3 +1,5 @@
+import 'rivium_push_version.dart';
+
 /// Configuration for RiviumPush SDK
 ///
 /// Only apiKey is required. MQTT configuration is automatically
@@ -34,6 +36,14 @@ class RiviumPushConfig {
   /// SDK confirms delivery directly.
   final String? appGroup;
 
+  /// Refresh this device's registration automatically on launch (default: true).
+  ///
+  /// Only applies to installs that registered before. The native SDK
+  /// re-registers in the background when 24 hours have passed or the app
+  /// version, SDK version, push token or user id changed. It never prompts
+  /// for permission. An explicit `register()` always registers.
+  final bool autoRefresh;
+
   const RiviumPushConfig({
     required this.apiKey,
     this.notificationIcon,
@@ -42,6 +52,7 @@ class RiviumPushConfig {
     this.showNotificationInForeground = true,
     this.autoConnect = true,
     this.appGroup,
+    this.autoRefresh = true,
   });
 
   Map<String, dynamic> toMap() {
@@ -53,6 +64,9 @@ class RiviumPushConfig {
       'showNotificationInForeground': showNotificationInForeground,
       'autoConnect': autoConnect,
       'appGroup': appGroup,
+      'autoRefresh': autoRefresh,
+      'wrapperSdkName': riviumPushSdkName,
+      'wrapperSdkVersion': riviumPushSdkVersion,
     };
   }
 }

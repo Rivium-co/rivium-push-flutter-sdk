@@ -1,5 +1,5 @@
 group 'co.rivium.push.flutter'
-version '0.1.0'
+version '0.1.16'
 
 buildscript {
     ext.kotlin_version = '1.8.22'
@@ -60,5 +60,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // Rivium Push Android SDK (published on Maven Central)
-    implementation 'co.rivium:rivium-push-android:0.1.11'
+    implementation 'co.rivium:rivium-push-android:0.1.12'
 }

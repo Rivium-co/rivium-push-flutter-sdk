@@ -58,6 +58,15 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         Log.d("Plugin", "APNs registration failed: \(error.localizedDescription)")
     }
 
+    // MARK: - Remote Notification Delivery
+    // Silent / background pushes delivered to the app. Confirm delivery, then
+    // return false so other plugins (and the host app) still handle it and
+    // own the completion handler.
+    public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+        RiviumPush.shared.handleRemoteNotification(userInfo: userInfo)
+        return false
+    }
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         // MARK: - Core Methods
@@ -396,7 +405,10 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
             usePushKit: args["usePushKit"] as? Bool ?? false,
             showNotificationInForeground: args["showNotificationInForeground"] as? Bool ?? true,
             autoConnect: args["autoConnect"] as? Bool ?? true,
-            appGroup: args["appGroup"] as? String
+            appGroup: args["appGroup"] as? String,
+            autoRefresh: args["autoRefresh"] as? Bool ?? true,
+            wrapperSdkName: args["wrapperSdkName"] as? String,
+            wrapperSdkVersion: args["wrapperSdkVersion"] as? String
         )
 
         RiviumPush.shared.initialize(config: config)
@@ -725,6 +737,10 @@ extension RiviumPushPlugin: ABTestingDelegate {
 // MARK: - UNUserNotificationCenterDelegate (foreground notification display)
 extension RiviumPushPlugin: UNUserNotificationCenterDelegate {
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // This plugin owns the notification-centre delegate, so the SDK never
+        // sees willPresent. Forward it so foreground deliveries are confirmed.
+        RiviumPush.shared.handleRemoteNotification(userInfo: notification.request.content.userInfo)
+
         if showNotificationInForeground {
             if #available(iOS 14.0, *) {
                 completionHandler([.banner, .sound, .badge])

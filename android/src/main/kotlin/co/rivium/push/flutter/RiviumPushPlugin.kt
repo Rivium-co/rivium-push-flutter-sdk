@@ -645,7 +645,10 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             apiKey = config["apiKey"] as String,
             notificationIcon = config["notificationIcon"] as? String,
             showServiceNotification = (config["showServiceNotification"] as? Boolean) ?: true,
-            showNotificationInForeground = (config["showNotificationInForeground"] as? Boolean) ?: true
+            showNotificationInForeground = (config["showNotificationInForeground"] as? Boolean) ?: true,
+            autoRefresh = (config["autoRefresh"] as? Boolean) ?: true,
+            wrapperSdkName = config["wrapperSdkName"] as? String,
+            wrapperSdkVersion = config["wrapperSdkVersion"] as? String
         )
 
         // Initialize native SDK
