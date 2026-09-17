@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.17] - Unreleased
+
+### Added
+- A reinstall no longer leaves a ghost device behind: the native SDKs send a hashed per-install
+  fingerprint, so the server retires the row the previous install left active. Pushes stop going
+  to devices that no longer exist, and delivery stats reflect reality.
+- Android: optional Firebase Cloud Messaging bridge (`co.rivium:rivium-push-fcm`) for devices
+  where Android has closed the Rivium connection to save battery.
+
+### Changed
+- Requires `RiviumPushSDK ~> 0.1.13` (iOS) and `rivium-push-android:0.1.13`.
+
 ## [0.1.16] - 2026-09-14
 
 ### Added

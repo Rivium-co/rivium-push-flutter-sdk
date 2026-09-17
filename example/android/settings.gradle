@@ -26,8 +26,5 @@ plugins {
 
 include ":app"
 
-// Local RiviumPush native SDK modules for development
-include ':rivium-push'
-project(':rivium-push').projectDir = new File(settingsDir, '../../../android/rivium-push')
-
-// pn-protocol is pulled from Maven Central automatically via rivium-push
+// The native SDK comes from Maven (Central, or mavenLocal after
+// `./gradlew publishToMavenLocal` in rivium-push-android-sdk).

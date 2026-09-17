@@ -60,5 +60,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // Rivium Push Android SDK (published on Maven Central)
-    implementation 'co.rivium:rivium-push-android:0.1.12'
+    implementation 'co.rivium:rivium-push-android:0.1.13'
 }
