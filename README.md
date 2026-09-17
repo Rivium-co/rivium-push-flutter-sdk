@@ -86,6 +86,25 @@ Add to `android/app/src/main/AndroidManifest.xml`:
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
+#### Optional: Firebase (Android)
+
+Android may close the Rivium connection to save battery. Adding Firebase gives a
+second delivery path, so pushes still arrive. Devices where Google services are
+blocked or missing keep using the Rivium connection.
+
+1. Add `google-services.json` to `android/app/` and apply the Google services plugin.
+2. Add the add-on in `android/app/build.gradle`:
+
+```gradle
+dependencies {
+    implementation("co.rivium:rivium-push-fcm:0.1.0")
+}
+```
+
+3. Upload your Firebase service account in Rivium Console under Push -> Settings.
+
+Nothing else changes: messages arriving over both paths are shown once.
+
 ### iOS
 
 Enable in Xcode -> Signing & Capabilities:
