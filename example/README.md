@@ -70,7 +70,7 @@ This example showcases all SDK capabilities:
 
    Open `lib/services/pushino_service.dart` and replace the API key:
    ```dart
-   static const String _apiKey = 'nl_live_your_api_key_here';
+   static const String _apiKey = 'rv_live_your_api_key_here';
    ```
 
 4. **Run the app**
@@ -137,7 +137,7 @@ void main() async {
 
   // Initialize with API key (MQTT config auto-fetched)
   await Pushino.init(PushinoConfig(
-    apiKey: 'nl_live_your_key',
+    apiKey: 'rv_live_your_key',
     notificationIcon: 'ic_notification', // Android only
   ));
 
