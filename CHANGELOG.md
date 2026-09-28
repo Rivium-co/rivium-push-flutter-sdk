@@ -1,6 +1,14 @@
 # Changelog
 
-## [0.1.17] - Unreleased
+## [0.1.18] - 2026-09-29
+
+### Changed
+- Uses native Android 0.1.14 and iOS 0.1.14: faster reconnects (retry capped at 60 s), 30 s keepalive, reconnect when the network returns or the app opens, and optional server-provided connection endpoints.
+
+### Fixed
+- iOS: the connection now reopens when the app returns from the background.
+
+## [0.1.17] - 2026-09-18
 
 ### Added
 - A reinstall no longer leaves a ghost device behind: the native SDKs send a hashed per-install
