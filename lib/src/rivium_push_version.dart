@@ -5,4 +5,4 @@ const String riviumPushSdkName = 'flutter';
 ///
 /// Must match `version` in pubspec.yaml (enforced by a unit test). Reported
 /// to the backend as the SDK version on registration.
-const String riviumPushSdkVersion = '0.1.19';
+const String riviumPushSdkVersion = '0.1.20';
