@@ -14,6 +14,10 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
     private static var pendingMessages: [(String, Any?)] = []
     private static let pendingMessagesLock = NSLock()
 
+    // The plugin instance whose Dart side has a tokenProvider. Nil when none
+    // does: nothing is registered with the native SDK then.
+    private static weak var tokenProviderOwner: RiviumPushPlugin?
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "co.rivium.push/main", binaryMessenger: registrar.messenger())
         let instance = RiviumPushPlugin()
@@ -45,6 +49,14 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         instance.deliverPendingMessages()
 
         Log.d("Plugin", "Flutter plugin registered")
+    }
+
+    public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+        // Dart can no longer answer: the native SDK goes on with the token it has.
+        if RiviumPushPlugin.tokenProviderOwner === self {
+            RiviumPushPlugin.tokenProviderOwner = nil
+            RiviumPush.shared.setTokenProvider(callback: nil)
+        }
     }
 
     // MARK: - APNs Token Forwarding
@@ -127,6 +139,28 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
 
         case "clearUserId":
             RiviumPush.shared.clearUserId()
+            result(nil)
+
+        // MARK: - Signed User Tokens
+        case "setTokenProvider":
+            let enabled = (call.arguments as? [String: Any])?["enabled"] as? Bool ?? false
+            if enabled {
+                RiviumPushPlugin.tokenProviderOwner = self
+                RiviumPush.shared.setTokenProvider(callback: { [weak self] completion in
+                    guard let self = self else {
+                        completion(.failure(TokenBridgeError("Flutter engine not attached")))
+                        return
+                    }
+                    self.fetchUserTokenFromDart(completion)
+                })
+            } else {
+                RiviumPushPlugin.tokenProviderOwner = nil
+                RiviumPush.shared.setTokenProvider(callback: nil)
+            }
+            result(nil)
+
+        case "setUserToken":
+            RiviumPush.shared.setUserToken((call.arguments as? [String: Any])?["token"] as? String)
             result(nil)
 
         // MARK: - Initial Message
@@ -594,6 +628,34 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         return RiviumPushMessage.from(payload: userInfo)
     }
 
+    // MARK: - Signed User Tokens
+
+    private struct TokenBridgeError: LocalizedError {
+        let errorDescription: String?
+        init(_ message: String) { errorDescription = message }
+    }
+
+    /// Asks Dart for the user token. Completes with nil when Dart says no user
+    /// is signed in, and with a failure when Dart cannot answer, so the native
+    /// SDK keeps the token it already has.
+    private func fetchUserTokenFromDart(_ completion: @escaping (Result<String?, Error>) -> Void) {
+        DispatchQueue.main.async {
+            guard RiviumPushPlugin.tokenProviderOwner === self, let channel = self.channel else {
+                completion(.failure(TokenBridgeError("Flutter engine not attached")))
+                return
+            }
+            channel.invokeMethod("getUserToken", arguments: nil) { reply in
+                if let error = reply as? FlutterError {
+                    completion(.failure(TokenBridgeError(error.message ?? error.code)))
+                } else if FlutterMethodNotImplemented.isEqual(reply) {
+                    completion(.failure(TokenBridgeError("Dart side is not ready")))
+                } else {
+                    completion(.success(reply as? String))
+                }
+            }
+        }
+    }
+
     // MARK: - Flutter Method Invocation
 
     private func invokeMethod(_ method: String, arguments: Any?) {
@@ -681,6 +743,13 @@ extension RiviumPushPlugin: RiviumPushDelegate {
 
     public func riviumPush(_ riviumPush: RiviumPush, didTapNotification message: RiviumPushMessage) {
         invokeMethod("onNotificationTapped", arguments: message.toDictionary())
+    }
+
+    public func riviumPush(_ riviumPush: RiviumPush, didFailWithAuthError event: RiviumPushAuthErrorEvent) {
+        invokeMethod("onAuthError", arguments: [
+            "code": event.code,
+            "message": event.message
+        ])
     }
 }
 

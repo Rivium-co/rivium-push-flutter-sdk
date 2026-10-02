@@ -18,6 +18,8 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 // Import from native SDK (AAR)
 import co.rivium.push.sdk.RiviumPush
+import co.rivium.push.sdk.RiviumPushAuthError
+import co.rivium.push.sdk.RiviumPushBlockingTokenProvider
 import co.rivium.push.sdk.RiviumPushCallback
 import co.rivium.push.sdk.RiviumPushCallbackAdapter
 import co.rivium.push.sdk.RiviumPushConfig
@@ -111,6 +113,62 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         fun isFlutterActive(): Boolean {
             return instance != null && isFlutterInForeground
         }
+
+        // The plugin instance whose Dart side has a tokenProvider. Null when
+        // none does: nothing is registered with the native SDK then.
+        @Volatile
+        private var tokenProviderOwner: RiviumPushPlugin? = null
+
+        private const val TOKEN_REPLY_TIMEOUT_MS = 10_000L
+
+        private val mainHandler by lazy { android.os.Handler(android.os.Looper.getMainLooper()) }
+
+        /**
+         * Asks Dart for the user token. Runs on a native SDK background thread.
+         * Returns null when Dart says no user is signed in; throws when Dart
+         * cannot answer, so the native SDK keeps the token it already has.
+         */
+        private fun fetchUserTokenFromDart(): String? {
+            val owner = tokenProviderOwner ?: throw IllegalStateException("Flutter engine not attached")
+            val latch = java.util.concurrent.CountDownLatch(1)
+            val token = java.util.concurrent.atomic.AtomicReference<String?>(null)
+            val failure = java.util.concurrent.atomic.AtomicReference<Throwable?>(null)
+
+            mainHandler.post {
+                try {
+                    if (tokenProviderOwner !== owner) {
+                        failure.set(IllegalStateException("Flutter engine not attached"))
+                        latch.countDown()
+                        return@post
+                    }
+                    owner.channel.invokeMethod("getUserToken", null, object : Result {
+                        override fun success(result: Any?) {
+                            token.set(result as? String)
+                            latch.countDown()
+                        }
+
+                        override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                            failure.set(IllegalStateException(errorMessage ?: errorCode))
+                            latch.countDown()
+                        }
+
+                        override fun notImplemented() {
+                            failure.set(IllegalStateException("Dart side is not ready"))
+                            latch.countDown()
+                        }
+                    })
+                } catch (e: Exception) {
+                    failure.set(e)
+                    latch.countDown()
+                }
+            }
+
+            if (!latch.await(TOKEN_REPLY_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                throw java.util.concurrent.TimeoutException("tokenProvider did not answer in time")
+            }
+            failure.get()?.let { throw it }
+            return token.get()
+        }
     }
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -131,6 +189,12 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         Log.d(TAG, "====== PLUGIN DETACHED FROM ENGINE ======")
         Log.d(TAG, "=========================================")
+
+        // Dart can no longer answer: the native SDK goes on with the token it has.
+        if (tokenProviderOwner === this) {
+            tokenProviderOwner = null
+            RiviumPush.setBlockingTokenProvider(null)
+        }
 
         channel.setMethodCallHandler(null)
         instance = null
@@ -250,6 +314,21 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             }
             "clearUserId" -> {
                 RiviumPush.clearUserId()
+                result.success(null)
+            }
+            // Signed user tokens
+            "setTokenProvider" -> {
+                if (call.argument<Boolean>("enabled") == true) {
+                    tokenProviderOwner = this
+                    RiviumPush.setBlockingTokenProvider(RiviumPushBlockingTokenProvider { fetchUserTokenFromDart() })
+                } else {
+                    tokenProviderOwner = null
+                    RiviumPush.setBlockingTokenProvider(null)
+                }
+                result.success(null)
+            }
+            "setUserToken" -> {
+                RiviumPush.setUserToken(call.argument<String>("token"))
                 result.success(null)
             }
             "getInitialMessage" -> {
@@ -716,6 +795,15 @@ class RiviumPushPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             override fun onNotificationTapped(message: RiviumPushMessage) {
                 Log.d(TAG, "Notification tapped: ${message.title}")
                 invokeFlutterMethod("onNotificationTapped", message.toMap())
+            }
+
+            override fun onAuthError(error: RiviumPushAuthError) {
+                // Only meaningful while Dart is listening: not queued for later.
+                if (instance == null) return
+                invokeFlutterMethod("onAuthError", mapOf(
+                    "code" to error.code,
+                    "message" to error.message
+                ))
             }
 
             override fun onNotificationAction(message: RiviumPushMessage, actionId: String) {

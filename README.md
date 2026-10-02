@@ -213,6 +213,32 @@ await RiviumPush.register(
 );
 ```
 
+## Signed User Tokens
+
+Optional. If your server issues Rivium user tokens, give the SDK a `tokenProvider` and every request is
+sent on behalf of that signed-in user. It is the same token (and can be the same function) you pass to
+Rivium Chat. Without a provider the SDK works exactly as before.
+
+```dart
+Future<String> fetchRiviumToken() async {
+  final res = await myApi.post('/rivium/token'); // your server mints the token
+  return res.data['token'] as String;
+}
+
+await RiviumPush.init(RiviumPushConfig(
+  apiKey: 'rv_live_your_api_key',
+  tokenProvider: fetchRiviumToken, // return null when no user is signed in
+));
+
+RiviumPush.onAuthError((event) {
+  // token_invalid, token_required, token_expired, token_mismatch, token_provider_failed
+  print('Auth error: ${event.code}');
+});
+```
+
+`RiviumPush.setTokenProvider(...)` sets or removes the provider later, and `RiviumPush.setUserToken(token)`
+hands over a token you fetched yourself.
+
 ## In-App Messages
 
 ```dart

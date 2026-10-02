@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'rivium_push_config.dart';
+import 'rivium_push_auth.dart';
 import 'rivium_push_message.dart';
 import 'rivium_push_error.dart';
 import 'inapp_message.dart';
@@ -60,6 +61,9 @@ typedef OnABTestErrorCallback = void Function(String testId, String error);
 
 /// Callback when a notification is tapped (for foreground handling)
 typedef OnNotificationTappedCallback = void Function(RiviumPushMessage message);
+
+/// Callback for identity errors (signed user tokens)
+typedef OnAuthErrorCallback = void Function(RiviumPushAuthErrorEvent event);
 
 /// Log levels for the RiviumPush SDK.
 /// Controls verbosity of logging output on both iOS and Android.
@@ -196,6 +200,13 @@ class RiviumPush {
   static OnABTestVariantAssignedCallback? _onABTestVariantAssigned;
   static OnABTestErrorCallback? _onABTestError;
   static OnNotificationTappedCallback? _onNotificationTapped;
+  static OnAuthErrorCallback? _onAuthError;
+
+  /// The app's token provider, asked by the native SDK through `getUserToken`.
+  static RiviumPushTokenProvider? _tokenProvider;
+
+  /// What the provider last threw, attached to the auth error that follows.
+  static Object? _tokenProviderError;
 
   /// A tap that arrived before the app registered its handler.
   ///
@@ -219,6 +230,10 @@ class RiviumPush {
     if (_initialized) return;
 
     _channel.setMethodCallHandler(_handleMethod);
+
+    // Before init, so the first registration already carries the token.
+    final tokenProvider = config.tokenProvider;
+    if (tokenProvider != null) await setTokenProvider(tokenProvider);
 
     await _channel.invokeMethod('init', config.toMap());
     _initialized = true;
@@ -383,6 +398,51 @@ class RiviumPush {
   /// Clear user ID (call on logout)
   static Future<void> clearUserId() async {
     await _channel.invokeMethod('clearUserId');
+  }
+
+  // ==================== Signed User Tokens ====================
+
+  /// Set, replace or remove (null) the signed user token provider.
+  /// Same as [RiviumPushConfig.tokenProvider]; may be called before [init].
+  ///
+  /// The provider is asked whenever the SDK needs a fresh token. If it throws
+  /// or does not answer within 10 seconds, the request is sent without a token
+  /// and [onAuthError] reports `token_provider_failed`.
+  static Future<void> setTokenProvider(RiviumPushTokenProvider? provider) async {
+    _channel.setMethodCallHandler(_handleMethod);
+    _tokenProvider = provider;
+    _tokenProviderError = null;
+    await _channel.invokeMethod('setTokenProvider', {'enabled': provider != null});
+  }
+
+  /// Hand the SDK a signed user token you fetched yourself (null forgets it).
+  ///
+  /// Without a token provider the SDK cannot renew it: call this again
+  /// whenever you refresh the token.
+  static Future<void> setUserToken(String? token) async {
+    await _channel.invokeMethod('setUserToken', {'token': token});
+  }
+
+  /// Set callback for identity errors: the server refused the user token, or
+  /// the token provider failed. Typically: send the user to login.
+  static void onAuthError(OnAuthErrorCallback callback) {
+    _onAuthError = callback;
+  }
+
+  /// Answers the native SDK's request for a user token.
+  static Future<String?> _getUserToken() async {
+    final provider = _tokenProvider;
+    if (provider == null) {
+      // Not "signed out": the native SDK keeps the token it already has.
+      throw PlatformException(code: 'no_token_provider', message: 'No tokenProvider set');
+    }
+    try {
+      final token = await provider();
+      return (token == null || token.isEmpty) ? null : token;
+    } catch (e) {
+      _tokenProviderError = e;
+      throw PlatformException(code: 'token_provider_failed', message: 'tokenProvider failed: $e');
+    }
   }
 
   /// The notification that launched the app, if the user got here by tapping
@@ -930,11 +990,29 @@ class RiviumPush {
   }
 
   /// Handle method calls from native side
-  static Future<void> _handleMethod(MethodCall call) async {
+  static Future<dynamic> _handleMethod(MethodCall call) async {
+    // Asked by the native SDK; the answer is a token, so nothing is logged.
+    if (call.method == 'getUserToken') return _getUserToken();
+
     print('[RiviumPush] _handleMethod called: ${call.method}');
     print('[RiviumPush] Arguments: ${call.arguments}');
 
     switch (call.method) {
+      case 'onAuthError':
+        if (call.arguments is Map) {
+          final args = call.arguments as Map<dynamic, dynamic>;
+          final code = args['code'] as String? ?? '';
+          final providerFailed = code == RiviumPushAuthErrorEvent.tokenProviderFailed;
+          final event = RiviumPushAuthErrorEvent(
+            code: code,
+            message: args['message'] as String? ?? 'Authentication failed',
+            error: providerFailed ? _tokenProviderError : null,
+          );
+          if (providerFailed) _tokenProviderError = null;
+          _onAuthError?.call(event);
+        }
+        break;
+
       case 'onMessage':
         print('[RiviumPush] onMessage handler - callback set: ${_onMessage != null}');
         if (_onMessage != null) {

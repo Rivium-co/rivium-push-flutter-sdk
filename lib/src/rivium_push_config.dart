@@ -1,3 +1,4 @@
+import 'rivium_push_auth.dart';
 import 'rivium_push_version.dart';
 
 /// Configuration for RiviumPush SDK
@@ -44,6 +45,11 @@ class RiviumPushConfig {
   /// for permission. An explicit `register()` always registers.
   final bool autoRefresh;
 
+  /// Returns the signed user token for the signed-in user, or null when no
+  /// user is signed in (optional). The same function you pass to Rivium Chat
+  /// works here. Can also be set later with `RiviumPush.setTokenProvider`.
+  final RiviumPushTokenProvider? tokenProvider;
+
   const RiviumPushConfig({
     required this.apiKey,
     this.notificationIcon,
@@ -53,6 +59,7 @@ class RiviumPushConfig {
     this.autoConnect = true,
     this.appGroup,
     this.autoRefresh = true,
+    this.tokenProvider,
   });
 
   Map<String, dynamic> toMap() {

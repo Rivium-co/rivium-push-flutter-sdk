@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.19] - 2026-10-02
+
+### Added
+- Signed user tokens (optional): `tokenProvider` on `RiviumPushConfig`, `RiviumPush.setTokenProvider`,
+  `RiviumPush.setUserToken` and `RiviumPush.onAuthError`. The same provider you pass to Rivium Chat works here.
+  Without a provider nothing changes.
+
+### Changed
+- Requires `RiviumPushSDK ~> 0.1.15` (iOS) and `rivium-push-android:0.1.15`.
+
 ## [0.1.18] - 2026-09-29
 
 ### Changed
