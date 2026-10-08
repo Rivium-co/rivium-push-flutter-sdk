@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.21] - 2026-10-08
+
+### Fixed
+- Android: a crash when the connection was closed while it was still opening, for example on a device with no internet. Requires `rivium-push-android:0.1.16`.
+
 ## [0.1.20] - 2026-10-02
 
 ### Changed
