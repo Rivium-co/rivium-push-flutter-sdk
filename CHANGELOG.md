@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.22] - 2026-10-10
+
+### Fixed
+- Android 12+: a crash when registration finished while the app was not in the foreground. Requires `rivium-push-android:0.1.17`.
+
 ## [0.1.21] - 2026-10-08
 
 ### Fixed
