@@ -121,6 +121,7 @@ await RiviumPush.init(RiviumPushConfig(
   showServiceNotification: true,       // Optional - foreground service notification (Android)
   showNotificationInForeground: true,  // Optional - show notifications when app is in foreground
   autoRefresh: true,                   // Optional - refresh the registration on launch (24h or app/SDK/user change)
+  sendDiagnostics: true,               // Optional - send counts of the SDK's own errors (no personal data)
 ));
 ```
 

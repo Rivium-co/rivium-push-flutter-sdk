@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.23] - 2026-10-14
+
+### Added
+- `sendDiagnostics` (default `true`): the SDK sends counts of its own errors, by error code, with its requests. Counts only, no personal data. Requires `rivium-push-android:0.1.18` and `RiviumPushSDK` 0.1.17.
+
 ## [0.1.22] - 2026-10-10
 
 ### Fixed

@@ -442,7 +442,8 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
             appGroup: args["appGroup"] as? String,
             autoRefresh: args["autoRefresh"] as? Bool ?? true,
             wrapperSdkName: args["wrapperSdkName"] as? String,
-            wrapperSdkVersion: args["wrapperSdkVersion"] as? String
+            wrapperSdkVersion: args["wrapperSdkVersion"] as? String,
+            sendDiagnostics: args["sendDiagnostics"] as? Bool ?? true
         )
 
         RiviumPush.shared.initialize(config: config)

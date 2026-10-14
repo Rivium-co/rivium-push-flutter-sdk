@@ -50,6 +50,10 @@ class RiviumPushConfig {
   /// works here. Can also be set later with `RiviumPush.setTokenProvider`.
   final RiviumPushTokenProvider? tokenProvider;
 
+  /// Send counts of the SDK's own errors, by error code, with its requests
+  /// (default: true). Counts only, no personal data.
+  final bool sendDiagnostics;
+
   const RiviumPushConfig({
     required this.apiKey,
     this.notificationIcon,
@@ -60,6 +64,7 @@ class RiviumPushConfig {
     this.appGroup,
     this.autoRefresh = true,
     this.tokenProvider,
+    this.sendDiagnostics = true,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,6 +79,7 @@ class RiviumPushConfig {
       'autoRefresh': autoRefresh,
       'wrapperSdkName': riviumPushSdkName,
       'wrapperSdkVersion': riviumPushSdkVersion,
+      'sendDiagnostics': sendDiagnostics,
     };
   }
 }
