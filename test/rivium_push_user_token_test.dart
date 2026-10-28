@@ -50,6 +50,7 @@ void main() {
       'autoRefresh',
       'wrapperSdkName',
       'wrapperSdkVersion',
+      'sendDiagnostics',
     });
   });
 

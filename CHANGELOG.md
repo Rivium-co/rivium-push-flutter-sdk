@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.24] - 2026-10-28
+
+Requires `rivium-push-android:0.1.19` and `RiviumPushSDK ~> 0.1.18`.
+
+### Added
+- Opened, clicked and dismissed tracking from the native Android and iOS SDKs: tapping a notification is reported as `opened`, an action button as `clicked`, a swipe-away (Android) as `dismissed`. A tap that cold-starts the app on iOS is reported too.
+
+### Fixed
+- Android: action buttons open the app on Android 12 and later (from the native SDK).
+
 ## [0.1.23] - 2026-10-14
 
 ### Added

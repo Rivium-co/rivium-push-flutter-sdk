@@ -141,7 +141,17 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
             RiviumPush.shared.clearUserId()
             result(nil)
 
-        // MARK: - Signed User Tokens
+        /// The launch tap skips the SDK's response handling (see above), so report
+    /// it as opened / clicked here. Looked up at run time: the call exists
+    /// only in newer RiviumPushSDK versions, and with an older one this is a
+    /// no-op instead of a build error.
+    private func reportLaunchResponse(userInfo: [AnyHashable: Any], actionIdentifier: String) {
+        let selector = NSSelectorFromString("reportNotificationResponseWithUserInfo:actionIdentifier:")
+        guard RiviumPush.shared.responds(to: selector) else { return }
+        _ = RiviumPush.shared.perform(selector, with: userInfo as NSDictionary, with: actionIdentifier as NSString)
+    }
+
+    // MARK: - Signed User Tokens
         case "setTokenProvider":
             let enabled = (call.arguments as? [String: Any])?["enabled"] as? Bool ?? false
             if enabled {
@@ -620,6 +630,7 @@ public class RiviumPushPlugin: NSObject, FlutterPlugin {
         guard let response = RiviumPushLaunchCatcher.takePendingLaunchResponse() else { return nil }
 
         let userInfo = response.notification.request.content.userInfo
+        reportLaunchResponse(userInfo: userInfo, actionIdentifier: response.actionIdentifier)
 
         if let messageDict = userInfo["rivium_push_message"] as? [String: Any] {
             let payload: [AnyHashable: Any] =
