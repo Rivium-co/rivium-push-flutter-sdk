@@ -17,7 +17,6 @@ allprojects {
         mavenCentral()
         // Local development - use mavenLocal() after ./gradlew publishToMavenLocal
         mavenLocal()
-        // For published builds: maven { url 'https://pub-69e86fbad8904e4a8bd3a1b2d051df1f.r2.dev/maven' }
     }
 }
 
