@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.26] - 2026-10-30
+
+Requires `rivium-push-android:0.1.19` and `RiviumPushSDK ~> 0.1.18` (unchanged).
+
+### Added
+- iOS: Swift Package Manager support. Flutter apps with Swift Package Manager on (the default in current Flutter) get the native iOS SDK through it; apps on CocoaPods work as before.
+
 ## [0.1.25] - 2026-10-30
 
 Requires `rivium-push-android:0.1.19` and `RiviumPushSDK ~> 0.1.18` (unchanged).

@@ -1,7 +1,14 @@
 import Flutter
+#if canImport(rivium_push_objc)
+import rivium_push_objc
+#endif
 import UIKit
 import UserNotifications
+#if canImport(RiviumPushSDK)
 import RiviumPushSDK
+#else
+import RiviumPush
+#endif
 
 /// Flutter plugin that wraps the native RiviumPush iOS SDK
 /// This is similar to how the Android plugin wraps the AAR
