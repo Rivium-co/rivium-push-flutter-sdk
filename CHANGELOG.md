@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.25] - 2026-10-30
+
+Requires `rivium-push-android:0.1.19` and `RiviumPushSDK ~> 0.1.18` (unchanged).
+
+### Fixed
+- iOS: apps using 0.1.24 failed to build ("attribute 'private' can only be used in a non-local scope" in `RiviumPushPlugin.swift`). Update to 0.1.25; nothing else changes.
+
 ## [0.1.24] - 2026-10-28
 
 Requires `rivium-push-android:0.1.19` and `RiviumPushSDK ~> 0.1.18`.

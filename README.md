@@ -20,7 +20,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  rivium_push: ^0.1.24
+  rivium_push: ^0.1.25
 ```
 
 Then run:
@@ -354,7 +354,7 @@ For apps with calling features, add the [rivium_push_voip](https://pub.dev/packa
 
 ```yaml
 dependencies:
-  rivium_push: ^0.1.24
+  rivium_push: ^0.1.25
   rivium_push_voip: ^0.1.2  # Optional - for calling apps
 ```
 
