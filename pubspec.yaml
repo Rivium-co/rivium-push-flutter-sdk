@@ -1,15 +1,17 @@
 name: rivium_push
-description: Real-time push notifications, in-app messages, inbox, A/B testing, and more for Flutter apps. No Firebase dependency.
-version: 0.1.26
+description: Real-time push notifications, in-app messages, inbox, A/B testing, and more for Flutter apps on Android, iOS and the web. No Firebase dependency.
+version: 0.1.31
 homepage: https://rivium.co/cloud/rivium-push
 repository: https://github.com/Rivium-co/rivium-push-flutter-sdk
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: '>=3.3.0'
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.19.0'
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
 
 dev_dependencies:
@@ -25,3 +27,8 @@ flutter:
         pluginClass: RiviumPushPlugin
       ios:
         pluginClass: RiviumPushPlugin
+      web:
+        pluginClass: RiviumPushWeb
+        fileName: src/web/rivium_push_web.dart
+  assets:
+    - assets/web/rivium-push-web.js

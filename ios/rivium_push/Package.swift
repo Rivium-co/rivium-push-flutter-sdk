@@ -8,7 +8,7 @@ let package = Package(
         .library(name: "rivium-push", targets: ["rivium_push"])
     ],
     dependencies: [
-        .package(url: "https://github.com/Rivium-co/rivium-push-ios-sdk.git", from: "0.1.18")
+        .package(url: "https://github.com/Rivium-co/rivium-push-ios-sdk.git", from: "0.1.21")
     ],
     targets: [
         // Objective-C code: Swift Package Manager builds it as its own target.

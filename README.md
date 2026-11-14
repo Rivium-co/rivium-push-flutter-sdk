@@ -240,6 +240,25 @@ RiviumPush.onAuthError((event) {
 `RiviumPush.setTokenProvider(...)` sets or removes the provider later, and `RiviumPush.setUserToken(token)`
 hands over a token you fetched yourself.
 
+## Conversation Notifications
+
+A message whose `data` has a `conversationId` is shown chat-style: the sender's photo, one conversation together
+(Android Conversations, iOS communication notifications, one web notification per conversation). Nothing to
+call in your code; messages without `conversationId` look as before. Rivium Chat sends these keys for you.
+
+| Key | |
+|---|---|
+| `conversationId` | Required. One conversation per id (your chat or room id). |
+| `senderName` | Who wrote the message (else the title). |
+| `senderId` | Tells two senders with the same name apart. |
+| `senderAvatarUrl` | An https image for the sender's photo. |
+| `conversationTitle` | The group's name (shown for groups). |
+| `conversationIsGroup` | `true` for a group. |
+
+iOS: add the **Communication Notifications** capability and `INSendMessageIntent` in `NSUserActivityTypes`, and in
+your Notification Service Extension call `RiviumPushServiceExtension.conversationContent(for: request) { contentHandler($0) }`.
+Guide: https://rivium.co/docs/push/conversation-notifications
+
 ## In-App Messages
 
 ```dart

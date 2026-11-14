@@ -173,6 +173,15 @@ class RiviumPushMessage {
   /// iOS notification category for action buttons
   final String? category;
 
+  /// Notification channel: the key of a channel defined in Rivium Console, or
+  /// an Android channel your app created itself. The native SDK shows the
+  /// notification on it.
+  final String? channelId;
+
+  /// The Console channel's definition (importance, vibrate, sound, ios), added
+  /// by the server. Null for a channel your app created itself.
+  final Map<String, dynamic>? channel;
+
   /// Notification priority: 'default', 'high', 'low'
   final String? priority;
 
@@ -206,6 +215,8 @@ class RiviumPushMessage {
     this.threadId,
     this.collapseKey,
     this.category,
+    this.channelId,
+    this.channel,
     this.priority,
     this.ttl,
     this.localizations,
@@ -236,6 +247,10 @@ class RiviumPushMessage {
       threadId: map['threadId'] as String?,
       collapseKey: map['collapseKey'] as String?,
       category: map['category'] as String?,
+      channelId: map['channelId'] as String?,
+      channel: map['channel'] is Map
+          ? Map<String, dynamic>.from(map['channel'] as Map)
+          : null,
       priority: map['priority'] as String?,
       ttl: map['ttl'] as int?,
       localizations: map['localizations'] != null
@@ -265,6 +280,8 @@ class RiviumPushMessage {
       if (threadId != null) 'threadId': threadId,
       if (collapseKey != null) 'collapseKey': collapseKey,
       if (category != null) 'category': category,
+      if (channelId != null) 'channelId': channelId,
+      if (channel != null) 'channel': channel,
       if (priority != null) 'priority': priority,
       if (ttl != null) 'ttl': ttl,
       if (localizations != null)

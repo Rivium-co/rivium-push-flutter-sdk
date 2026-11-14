@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.1.31] - 2026-11-15
+
+Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21`.
+
+### Added
+- Chat-style notifications from the native SDKs and the bundled web SDK 0.1.15: a message whose `data` has a
+  `conversationId` shows the sender's photo and keeps one conversation together (Android Conversations, iOS
+  communication notifications, one web notification per conversation). Keys: `conversationId` (required), `senderName`, `senderId`, `senderAvatarUrl`, `conversationTitle`, `conversationIsGroup`. iOS: call
+  `RiviumPushServiceExtension.conversationContent` in your Notification Service Extension (see the README).
+
+## [0.1.30] - 2026-11-13
+
+Requires `rivium-push-android:0.1.21` and `RiviumPushSDK ~> 0.1.20` (unchanged).
+
+### Fixed
+- Web: clicking a browser notification calls `onNotificationTapped` instead of throwing a `NoSuchMethodError`.
+
+## [0.1.29] - 2026-11-13
+
+Requires `rivium-push-android:0.1.21` and `RiviumPushSDK ~> 0.1.20` (unchanged).
+
+### Added
+- Web: Flutter web apps register and receive messages while the page is open, with the same Dart API
+  (`init`, `register`, `onMessage`, `onNotificationTapped`, topics, user ID, signed user tokens). The browser asks for
+  notification permission once. A visible page gets `onMessage`; a page in a background tab also shows a browser
+  notification. The web SDK ships inside the package, so nothing is loaded from a third-party site.
+
+### Changed
+- Needs Dart 3.3 / Flutter 3.19 or newer.
+
+## [0.1.28] - 2026-11-06
+
+Requires `rivium-push-android:0.1.21` and `RiviumPushSDK ~> 0.1.20`.
+
+### Added
+- Notification channels: send with `channelId`; the native SDKs create the Console's channels and show each message
+  on its channel. `RiviumPushMessage.channelId` and `channel` in Dart.
+
+## [0.1.27] - 2026-11-01
+
+Requires `rivium-push-android:0.1.20` and `RiviumPushSDK ~> 0.1.18` (unchanged).
+
+### Fixed
+- Android: after a device restart, messages sent to this device arrive without the app being opened first.
+- Android: a message shown just before the app was closed is confirmed as delivered when it arrives again, so it is not sent repeatedly.
+
 ## [0.1.26] - 2026-10-30
 
 Requires `rivium-push-android:0.1.19` and `RiviumPushSDK ~> 0.1.18` (unchanged).
