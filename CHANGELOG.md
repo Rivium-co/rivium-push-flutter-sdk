@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.32] - 2026-11-15
+
+Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21` (unchanged).
+
+### Added
+- Web: `RiviumPushConfig(webPush: true)` (opt-in) for notifications while the web app is closed, through the
+  browser's Web Push, also in an iPhone home-screen app (iOS 16.4+). `dart run rivium_push:web_push_setup` copies
+  the service worker into `web/`. It is registered under its own scope (`rivium-push/`), next to Flutter's own. A tap
+  while the app is closed opens it and `getInitialMessage()` returns the message. Off by default: apps that do not
+  set it behave as before.
+
+### Changed
+- Bundled web SDK 0.1.16: permission is asked before anything slow (Safari needs it close to the tap); a worker of
+  another library is never subscribed to Web Push.
+
 ## [0.1.31] - 2026-11-15
 
 Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21`.

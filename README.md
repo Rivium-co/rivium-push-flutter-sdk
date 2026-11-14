@@ -111,6 +111,27 @@ Enable in Xcode -> Signing & Capabilities:
 - Push Notifications
 - Background Modes -> Remote notifications
 
+#### Notifications while the app is closed (Web Push, PWA)
+
+Opt in with `webPush: true` to get notifications while the web app is closed, also in an iPhone home-screen app
+(iOS 16.4+):
+
+```sh
+dart run rivium_push:web_push_setup   # once, in the app folder: copies rivium-push-sw.js into web/
+```
+
+```dart
+await RiviumPush.init(RiviumPushConfig(apiKey: 'rv_live_...', webPush: true));
+// iOS: call register() from a button tap inside the home-screen app.
+await RiviumPush.register();
+```
+
+- The worker is registered under its own scope (`rivium-push/`), so Flutter's own service worker is untouched.
+- A tap on a notification while the app is closed opens it; `getInitialMessage()` returns the message.
+- Run the setup command again after upgrading `rivium_push`. Without the file, `webPush` stays off and the app works
+  as before (a warning is printed in the browser console).
+- iPhone: Web Push works only in an app added to the home screen (Share › Add to Home Screen), not in a Safari tab.
+
 ## Configuration
 
 ```dart

@@ -54,6 +54,16 @@ class RiviumPushConfig {
   /// (default: true). Counts only, no personal data.
   final bool sendDiagnostics;
 
+  /// Web only: notifications while the web app is closed, through the browser's Web Push (default: false).
+  ///
+  /// Without it a Flutter web app gets messages only while it is open. With it, the Rivium Push service worker
+  /// receives them in the background, also in an iPhone home-screen app (iOS 16.4+). Setup: run
+  /// `dart run rivium_push:web_push_setup` in the app's folder once (it copies `rivium-push-sw.js` into `web/`), and
+  /// on iOS call `register()` from a button tap inside the home-screen app. The worker has its own scope, so
+  /// Flutter's own service worker is untouched. Without the file the app works as without this option.
+  /// Android and iOS apps ignore it.
+  final bool webPush;
+
   const RiviumPushConfig({
     required this.apiKey,
     this.notificationIcon,
@@ -65,6 +75,7 @@ class RiviumPushConfig {
     this.autoRefresh = true,
     this.tokenProvider,
     this.sendDiagnostics = true,
+    this.webPush = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -80,6 +91,8 @@ class RiviumPushConfig {
       'wrapperSdkName': riviumPushSdkName,
       'wrapperSdkVersion': riviumPushSdkVersion,
       'sendDiagnostics': sendDiagnostics,
+      // Web only; left out when off, so the native SDKs get the same map as before.
+      if (webPush) 'webPush': true,
     };
   }
 }
