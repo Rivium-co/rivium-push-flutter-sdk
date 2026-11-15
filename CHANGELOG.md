@@ -1,6 +1,51 @@
 # Changelog
 
+## [0.1.36] - 2026-11-15
+
+Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21` (unchanged).
+
+### Added
+- Web: `webPushAtRoot: true` registers the service worker at the app's root, so it controls the page (some iPhones
+  accept a Web Push subscription only then). `dart run rivium_push:web_push_setup --root` writes a
+  `web/flutter_bootstrap.js` that does not start Flutter's own service worker. A worker left under `rivium-push/` is
+  removed. Bundled web SDK 0.1.20.
+
+## [0.1.35] - 2026-11-15
+
+**Withdrawn from Rivium Center:** Web Push did not subscribe on some iPhones (worker under its own scope). Use 0.1.36 with `webPushAtRoot: true`.
+
+Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21` (unchanged).
+
+### Changed
+- Bundled web SDK 0.1.19: a refused Web Push subscription reports what the browser said, with the registration.
+
+## [0.1.34] - 2026-11-15
+
+**Withdrawn from Rivium Center:** Web Push did not subscribe on some iPhones (worker under its own scope). Use 0.1.36 with `webPushAtRoot: true`.
+
+Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21` (unchanged).
+
+### Added
+- `RiviumPush.getWebPushStatus()` (web): `subscribed`, or why Web Push is not (`failed: NotAllowedError…` on iPhone
+  = call `register()` again from a tap). Null on Android and iOS.
+
+### Fixed
+- Web (`webPush: true`), iPhone home-screen apps: Safari refused the subscription although notifications were
+  allowed. The worker is now prepared when the app starts, and `register()` subscribes first (web SDK 0.1.18).
+
+## [0.1.33] - 2026-11-15
+
+**Withdrawn from Rivium Center:** Web Push on iPhone home-screen apps did not work in this version. Use 0.1.34.
+
+Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21` (unchanged).
+
+### Fixed
+- Web (`webPush: true`): bundled web SDK 0.1.17 subscribes only once the service worker is active. On iPhone
+  home-screen apps the first subscription was refused, so notifications came only while the app was open.
+
 ## [0.1.32] - 2026-11-15
+
+**Withdrawn from Rivium Center:** Web Push on iPhone home-screen apps did not work in this version. Use 0.1.34.
 
 Requires `rivium-push-android:0.1.22` and `RiviumPushSDK ~> 0.1.21` (unchanged).
 

@@ -32,6 +32,8 @@ extension type _Sdk(JSObject _) implements JSObject {
   external bool isConnected();
   external String? getDeviceId();
   external String? getSubscriptionId();
+  external String? getWebPushStatus();
+  external JSPromise<JSAny?> prepareWebPush();
   external JSObject? getInitialMessage();
   external int getBadgeCount();
   external void setBadgeCount(int count);
@@ -49,6 +51,7 @@ class RiviumPushWeb {
 
   final MethodChannel _channel;
   _Sdk? _sdk;
+  Future<void>? _preparing;
   bool _useTokenProvider = false;
   static Future<void>? _loading;
 
@@ -72,6 +75,8 @@ class RiviumPushWeb {
         return null;
       case 'register':
         final sdk = _required();
+        // A worker still being prepared (page just loaded): let it finish, so the subscription comes first.
+        await _preparing;
         final options = JSObject();
         final userId = args['userId'] as String?;
         if (userId != null) options['userId'] = userId.toJS;
@@ -106,6 +111,8 @@ class RiviumPushWeb {
         return _sdk?.getDeviceId();
       case 'getSubscriptionId':
         return _sdk?.getSubscriptionId();
+      case 'getWebPushStatus':
+        return _sdk?.getWebPushStatus();
       case 'getInitialMessage':
         return _toMap(_sdk?.getInitialMessage());
       case 'getBadgeCount':
@@ -139,7 +146,7 @@ class RiviumPushWeb {
       ..['autoRefresh'] = (config['autoRefresh'] != false).toJS;
     if (webPush) {
       options['serviceWorkerPath'] = _appPath(_workerFile).toJS;
-      options['serviceWorkerScope'] = _appPath(_workerScope).toJS;
+      options['serviceWorkerScope'] = _appPath(config['webPushAtRoot'] == true ? '' : _workerScope).toJS;
     }
     if (_useTokenProvider) options['tokenProvider'] = _tokenProvider.toJS;
     final sdk = _Sdk(constructor.callAsConstructor<JSObject>(options));
@@ -168,6 +175,11 @@ class RiviumPushWeb {
       });
     }).toJS);
     _sdk = sdk;
+    // Web Push: register the worker now and let it become active, so register() from a tap can subscribe at once
+    // (Safari on iPhone accepts a subscription only right after the tap).
+    if (webPush) {
+      _preparing = sdk.prepareWebPush().toDart.then((_) {}, onError: (_) {});
+    }
   }
 
   /// The JS SDK asks for the user token; the app's tokenProvider answers on

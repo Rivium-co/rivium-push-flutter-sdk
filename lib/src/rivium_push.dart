@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'rivium_push_config.dart';
 import 'rivium_push_auth.dart';
@@ -387,6 +388,14 @@ class RiviumPush {
   /// new MQTT topic. Returns `null` until registration succeeds at least once.
   static Future<String?> getSubscriptionId() async {
     return await _channel.invokeMethod<String>('getSubscriptionId');
+  }
+
+  /// Web with `webPush: true`: how Web Push went at the last [register] — `subscribed`, or why not (`off`,
+  /// `no-worker`, `no-push-manager`, `no-vapid-key`, `failed: …`). Safari on iPhone accepts the subscription only
+  /// right after a tap: on `failed: NotAllowedError…`, call [register] again from a button. Null on Android and iOS.
+  static Future<String?> getWebPushStatus() async {
+    if (!kIsWeb) return null;
+    return await _channel.invokeMethod<String>('getWebPushStatus');
   }
 
   /// Set or update user ID for the current device
